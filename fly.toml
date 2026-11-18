@@ -1,0 +1,33 @@
+# Fly.io app config for the Menu Platform MVP.
+# IMPORTANT: `app` must be globally unique across all of Fly.io. Change it
+# before running `fly launch` / `fly deploy` (or let `fly launch` pick one
+# for you and it will rewrite this file).
+app = "menu-platform-mvp"
+primary_region = "ord"
+
+[build]
+
+[env]
+  MENUAPP_ADDR = ":8080"
+  MENUAPP_DB = "/data/menuapp.db"
+
+[[mounts]]
+  source = "menuapp_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    path = "/login"
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

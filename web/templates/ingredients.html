@@ -1,0 +1,59 @@
+{{define "content"}}
+<h1>Ingredient library</h1>
+{{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+
+{{if .Ingredients}}
+<table class="table">
+  <thead><tr><th>Name</th><th>Unit</th><th>Cost/unit</th><th>Supplier</th><th>Yield</th><th></th></tr></thead>
+  <tbody>
+    {{range .Ingredients}}
+    <tr>
+      <td>
+        <details>
+          <summary>{{.Name}}</summary>
+          <form method="post" action="/r/{{$.Active.ID}}/ingredients/{{.ID}}/update" class="inline-form-fields">
+            <input type="text" name="name" value="{{.Name}}" required>
+            <input type="text" name="unit" value="{{.Unit}}" required>
+            <input type="text" name="unit_cost" value="{{printf "%.4f" (dollarsF .UnitCostCents)}}" required>
+            <input type="text" name="supplier" value="{{.Supplier}}" placeholder="Supplier">
+            <input type="text" name="yield_pct" value="{{num .YieldPct}}" title="Yield %">
+            <button type="submit" class="btn-primary btn-sm">Save</button>
+          </form>
+        </details>
+      </td>
+      <td>{{.Unit}}</td>
+      <td>{{unitcost .UnitCostCents}}</td>
+      <td>{{.Supplier}}</td>
+      <td>{{num .YieldPct}}%</td>
+      <td>
+        <form method="post" action="/r/{{$.Active.ID}}/ingredients/{{.ID}}/delete" onsubmit="return confirm('Delete this ingredient?');">
+          <button type="submit" class="link-btn">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p class="muted">No ingredients yet.</p>
+{{end}}
+
+<div class="card" style="max-width:520px">
+  <h2>Add ingredient</h2>
+  <form method="post" action="/r/{{.Active.ID}}/ingredients">
+    <label>Name <input type="text" name="name" required></label>
+    <label>Purchase unit
+      <select name="unit">
+        <option>g</option><option>kg</option><option>ml</option><option>l</option>
+        <option>oz</option><option>lb</option><option>unit</option>
+        <option>tsp</option><option>tbsp</option><option>cup</option>
+      </select>
+    </label>
+    <label>Cost per unit <input type="text" name="unit_cost" placeholder="0.04" required></label>
+    <label>Supplier <input type="text" name="supplier"></label>
+    <label>Yield % <input type="text" name="yield_pct" value="100" title="Usable % after trim/loss"></label>
+    <button type="submit" class="btn-primary">Add ingredient</button>
+  </form>
+  <p class="muted">Cost is per 1 unit of the purchase unit you choose — e.g. $0.04 per gram. Recipes are entered in that same unit.</p>
+</div>
+{{end}}

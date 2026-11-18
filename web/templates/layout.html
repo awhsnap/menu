@@ -1,0 +1,51 @@
+{{define "layout.html"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu Platform</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  {{with .User}}
+  <header class="topnav">
+    <div class="topnav-left">
+      <a class="brand" href="/">🍽 Menu Platform</a>
+      {{if $.Active}}
+      <nav class="tabs">
+        <a href="/r/{{$.Active.ID}}/dashboard">Dashboard</a>
+        <a href="/r/{{$.Active.ID}}/menus">Menu</a>
+        <a href="/r/{{$.Active.ID}}/ingredients">Ingredients</a>
+        <a href="/r/{{$.Active.ID}}/sales">Sales</a>
+        <a href="/r/{{$.Active.ID}}/analytics">Analytics</a>
+        <a href="/r/{{$.Active.ID}}/settings">Settings</a>
+      </nav>
+      {{end}}
+    </div>
+    <div class="topnav-right">
+      {{if $.Restaurants}}
+      <form method="get" action="#" class="restaurant-switcher">
+        <select onchange="if(this.value) window.location='/restaurants/'+this.value+'/select'">
+          <option value="">Switch restaurant…</option>
+          {{range $.Restaurants}}
+          <option value="{{.ID}}" {{if and $.Active (eq $.Active.ID .ID)}}selected{{end}}>{{.Name}}</option>
+          {{end}}
+        </select>
+      </form>
+      {{end}}
+      <a href="/restaurants" class="muted-link">All restaurants</a>
+      <form method="post" action="/logout" style="display:inline">
+        <button class="link-btn" type="submit">Log out</button>
+      </form>
+    </div>
+  </header>
+  {{end}}
+
+  <main class="container">
+    {{if .Flash}}<div class="flash">{{.Flash}}</div>{{end}}
+    {{template "content" .}}
+  </main>
+</body>
+</html>
+{{end}}

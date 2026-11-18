@@ -1,0 +1,45 @@
+{{define "content"}}
+<h1>{{.Active.Name}}</h1>
+
+<div class="stat-row">
+  <div class="stat"><span class="stat-num">{{.MenuCount}}</span><span class="stat-label">Menus</span></div>
+  <div class="stat"><span class="stat-num">{{.ActiveItemCount}}</span><span class="stat-label">Active items</span></div>
+  <div class="stat"><span class="stat-num">{{.ItemCount}}</span><span class="stat-label">Total items</span></div>
+  <div class="stat"><span class="stat-num">{{.IngredientCount}}</span><span class="stat-label">Ingredients</span></div>
+</div>
+
+<div class="quicklinks">
+  <a class="card quicklink" href="/r/{{.Active.ID}}/menus">📋 Edit menu</a>
+  <a class="card quicklink" href="/r/{{.Active.ID}}/ingredients">🥕 Ingredient library</a>
+  <a class="card quicklink" href="/r/{{.Active.ID}}/sales">📈 Import sales</a>
+  <a class="card quicklink" href="/r/{{.Active.ID}}/analytics">📊 Menu analytics</a>
+</div>
+
+<h2>Margin alerts</h2>
+{{if .MarginAlerts}}
+<p class="muted">These items' plate cost is above your {{pct .Active.TargetFoodCostPct}} target food cost.</p>
+<table class="table">
+  <thead><tr><th>Item</th><th>Plate cost</th><th>Price</th><th>Margin</th><th></th></tr></thead>
+  <tbody>
+    {{range .MarginAlerts}}
+    <tr>
+      <td>{{.Item.Name}}</td>
+      <td>{{money .CostCents}}</td>
+      <td>{{money .Item.PriceCents}}</td>
+      <td class="warn">{{pct .MarginPct}}</td>
+      <td><a href="/r/{{$.Active.ID}}/items/{{.Item.ID}}">Review →</a></td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p class="muted">No items are currently over target food cost — nice work. Add ingredients and recipes to items to start tracking margin.</p>
+{{end}}
+
+{{if not .HasSales}}
+<div class="card hint">
+  <strong>Tip:</strong> import a sales CSV to unlock demand forecasting and the menu-engineering (stars/plowhorses/puzzles/dogs) chart.
+  <a href="/r/{{.Active.ID}}/sales">Import sales →</a>
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,28 @@
+{{define "content"}}
+<h1>Sales import</h1>
+{{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+
+{{if .Summary}}
+<div class="card hint">
+  <strong>Imported {{.Summary.Filename}}</strong><br>
+  {{.Summary.RowCount}} rows read, {{.Summary.MatchedCount}} matched to an existing menu item by name.
+  {{if lt .Summary.MatchedCount .Summary.RowCount}}
+  <p class="muted">Unmatched rows are still stored, but won't show up in forecasts or the menu-engineering chart until their item name matches a menu item exactly (case-insensitive).</p>
+  {{end}}
+  <p><a href="/r/{{.Active.ID}}/analytics">View analytics →</a></p>
+</div>
+{{end}}
+
+<div class="card" style="max-width:560px">
+  <h2>Upload a sales CSV</h2>
+  <form method="post" action="/r/{{.Active.ID}}/sales/import" enctype="multipart/form-data">
+    <label>CSV file <input type="file" name="file" accept=".csv" required></label>
+    <button type="submit" class="btn-primary">Import</button>
+  </form>
+  <p class="muted">Expected columns (any order): <code>item</code>, <code>quantity</code>, <code>date</code> (YYYY-MM-DD). Extra columns are ignored.</p>
+  <pre class="sample-csv">item,quantity,date
+Margherita Pizza,14,2026-11-01
+Margherita Pizza,18,2026-11-02
+Caesar Salad,9,2026-11-01</pre>
+</div>
+{{end}}

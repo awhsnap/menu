@@ -1,0 +1,82 @@
+{{define "content"}}
+<p class="breadcrumb"><a href="/r/{{.Active.ID}}/menus">← Menus</a></p>
+<h1>{{.Item.Name}} {{if not .Item.Active}}<span class="badge badge-off">86'd</span>{{end}}</h1>
+{{if .Flash}}<div class="flash">{{.Flash}}</div>{{end}}
+
+<div class="two-col">
+  <div class="card">
+    <h2>Details</h2>
+    <form method="post" action="/r/{{.Active.ID}}/items/{{.Item.ID}}/update">
+      <label>Name <input type="text" name="name" value="{{.Item.Name}}" required></label>
+      <label>Description <input type="text" name="description" value="{{.Item.Description}}"></label>
+      <label>Price <input type="text" name="price" value="{{printf "%.2f" (div2 .Item.PriceCents)}}" required></label>
+      <button type="submit" class="btn-primary">Save</button>
+    </form>
+
+    <div class="btn-row">
+      <form method="post" action="/r/{{.Active.ID}}/items/{{.Item.ID}}/toggle">
+        <button type="submit" class="btn-secondary">{{if .Item.Active}}86 this item{{else}}Bring back{{end}}</button>
+      </form>
+      <form method="post" action="/r/{{.Active.ID}}/items/{{.Item.ID}}/delete" onsubmit="return confirm('Delete this item?');">
+        <button type="submit" class="btn-danger">Delete</button>
+      </form>
+      <a class="btn-secondary" href="/r/{{.Active.ID}}/items/{{.Item.ID}}/forecast">View forecast →</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cost &amp; margin</h2>
+    <table class="kv">
+      <tr><td>Plate cost</td><td>{{money .CostCents}}</td></tr>
+      <tr><td>Menu price</td><td>{{money .Item.PriceCents}}</td></tr>
+      <tr><td>Margin</td><td class="{{if .BelowTarget}}warn{{end}}">{{money .MarginCents}} ({{pct .MarginPct}})</td></tr>
+      <tr><td>Target food cost</td><td>{{pct .TargetPct}}</td></tr>
+    </table>
+    {{if .BelowTarget}}<p class="warn">⚠ This item's plate cost is above your target food cost.</p>{{end}}
+  </div>
+</div>
+
+<div class="card">
+  <h2>Recipe</h2>
+  {{if .RecipeLines}}
+  <table class="table">
+    <thead><tr><th>Ingredient</th><th>Qty</th><th>Unit</th><th>Line cost</th><th></th></tr></thead>
+    <tbody>
+      {{range .RecipeLines}}
+      <tr>
+        <td>{{.IngredientName}}</td>
+        <td>{{num .Quantity}}</td>
+        <td>{{.Unit}}</td>
+        <td>{{money (lineCost .)}}</td>
+        <td>
+          <form method="post" action="/r/{{$.Active.ID}}/recipe-lines/{{.ID}}/delete">
+            <input type="hidden" name="back" value="/r/{{$.Active.ID}}/items/{{$.Item.ID}}">
+            <button type="submit" class="link-btn">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No ingredients linked yet — plate cost is $0.00 until you add some.</p>
+  {{end}}
+
+  {{if .Ingredients}}
+  <details class="inline-form" open>
+    <summary>+ Add ingredient to recipe</summary>
+    <form method="post" action="/r/{{.Active.ID}}/items/{{.Item.ID}}/recipe">
+      <label>Ingredient
+        <select name="ingredient_id" required>
+          {{range .Ingredients}}<option value="{{.ID}}">{{.Name}} ({{.Unit}}, {{unitcost .UnitCostCents}}/{{.Unit}})</option>{{end}}
+        </select>
+      </label>
+      <label>Quantity <input type="text" name="quantity" placeholder="e.g. 0.25" required></label>
+      <button type="submit" class="btn-primary">Add to recipe</button>
+    </form>
+  </details>
+  {{else}}
+  <p class="muted">You don't have any ingredients yet. <a href="/r/{{.Active.ID}}/ingredients">Add some first →</a></p>
+  {{end}}
+</div>
+{{end}}

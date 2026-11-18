@@ -1,0 +1,35 @@
+{{define "content"}}
+<p class="breadcrumb"><a href="/r/{{.Active.ID}}/items/{{.Item.ID}}">← {{.Item.Name}}</a></p>
+<h1>Demand forecast — {{.Item.Name}}</h1>
+
+{{if .Result.HasEnoughData}}
+<div class="card">
+  <div class="chart-legend">
+    <span><i class="swatch" style="background:#6b7cff"></i> History</span>
+    <span><i class="swatch" style="background:#ffb74d"></i> 7-day forecast</span>
+  </div>
+  {{.ChartSVG}}
+</div>
+
+<div class="stat-row">
+  <div class="stat"><span class="stat-num">{{num .Result.DailyAverage}}</span><span class="stat-label">Avg units/day (history)</span></div>
+  <div class="stat"><span class="stat-num">{{num .Result.TrendPerDay}}</span><span class="stat-label">Trend (units/day)</span></div>
+  <div class="stat"><span class="stat-num">{{num .Result.TotalForecast}}</span><span class="stat-label">Projected next 7 days</span></div>
+</div>
+
+<div class="card">
+  <h2>Next 7 days</h2>
+  <table class="table">
+    <thead><tr><th>Date</th><th>Projected units</th></tr></thead>
+    <tbody>
+      {{range .Result.Forecast}}
+      <tr><td>{{.Date}}</td><td>{{num .Quantity}}</td></tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+{{else}}
+<p class="muted">Not enough sales history for this item yet. Import at least a few days of sales (with an item name matching "{{.Item.Name}}") on the Sales page to see a forecast.</p>
+<p><a href="/r/{{.Active.ID}}/sales">Import sales →</a></p>
+{{end}}
+{{end}}

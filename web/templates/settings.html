@@ -1,0 +1,14 @@
+{{define "content"}}
+<h1>Settings</h1>
+{{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+<div class="card" style="max-width:480px">
+  <form method="post" action="/r/{{.Active.ID}}/settings">
+    <label>Restaurant name <input type="text" name="name" value="{{.Active.Name}}" required></label>
+    <label>Target food cost %
+      <input type="number" step="0.1" name="target_food_cost_pct" value="{{.Active.TargetFoodCostPct}}">
+      <small class="muted">Items whose plate cost exceeds this share of the menu price trigger a margin alert.</small>
+    </label>
+    <button type="submit" class="btn-primary">Save</button>
+  </form>
+</div>
+{{end}}

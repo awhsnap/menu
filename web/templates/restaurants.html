@@ -1,0 +1,31 @@
+{{define "content"}}
+<h1>Your restaurants</h1>
+{{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+
+{{if .Restaurants}}
+<div class="card-grid">
+  {{range .Restaurants}}
+  <a class="card restaurant-card" href="/restaurants/{{.ID}}/select">
+    <h3>{{.Name}}</h3>
+    <p class="muted">Target food cost: {{pct .TargetFoodCostPct}}</p>
+  </a>
+  {{end}}
+</div>
+{{else}}
+<p class="muted">You don't have any restaurants yet — create your first one below.</p>
+{{end}}
+
+<div class="card" style="max-width:480px">
+  <h2>Add a restaurant</h2>
+  <form method="post" action="/restaurants">
+    <label>Restaurant name
+      <input type="text" name="name" required autofocus>
+    </label>
+    <label>Target food cost %
+      <input type="number" step="0.1" name="target_food_cost_pct" value="30">
+      <small class="muted">Used to flag dishes whose plate cost eats too much of the price.</small>
+    </label>
+    <button type="submit" class="btn-primary">Create restaurant</button>
+  </form>
+</div>
+{{end}}

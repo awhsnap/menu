@@ -1,0 +1,26 @@
+{{define "content"}}
+<h1>Menus</h1>
+
+{{if .Menus}}
+<div class="card-grid">
+  {{range .Menus}}
+  <a class="card" href="/r/{{$.Active.ID}}/menus/{{.ID}}">
+    <h3>{{.Name}}</h3>
+    <p class="muted">{{if .Active}}Active{{else}}Inactive{{end}}</p>
+  </a>
+  {{end}}
+</div>
+{{else}}
+<p class="muted">No menus yet.</p>
+{{end}}
+
+<div class="card" style="max-width:420px">
+  <h2>New menu</h2>
+  <form method="post" action="/r/{{.Active.ID}}/menus">
+    <label>Name
+      <input type="text" name="name" placeholder="e.g. Dinner, Happy Hour" required>
+    </label>
+    <button type="submit" class="btn-primary">Create menu</button>
+  </form>
+</div>
+{{end}}

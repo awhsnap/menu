@@ -1,0 +1,34 @@
+{{define "content"}}
+<h1>Menu engineering</h1>
+
+{{if not .HasSales}}
+<p class="muted">Import sales data to unlock the full menu-engineering matrix. Items are shown below as "Unranked" until then.</p>
+<p><a href="/r/{{.Active.ID}}/sales">Import sales →</a></p>
+{{end}}
+
+<div class="card">
+  {{.ChartSVG}}
+  <div class="chart-legend">
+    <span><i class="swatch" style="background:#2e7d32"></i> Star — popular &amp; profitable</span>
+    <span><i class="swatch" style="background:#1976d2"></i> Plowhorse — popular, thin margin</span>
+    <span><i class="swatch" style="background:#f57c00"></i> Puzzle — profitable, low sales</span>
+    <span><i class="swatch" style="background:#c62828"></i> Dog — low on both</span>
+  </div>
+</div>
+
+<table class="table">
+  <thead><tr><th>Item</th><th>Qty sold</th><th>Price</th><th>Cost</th><th>Margin</th><th>Quadrant</th></tr></thead>
+  <tbody>
+    {{range .Items}}
+    <tr>
+      <td><a href="/r/{{$.Active.ID}}/items/{{.ItemID}}">{{.Name}}</a></td>
+      <td>{{num .QuantitySold}}</td>
+      <td>{{money .PriceCents}}</td>
+      <td>{{money .CostCents}}</td>
+      <td>{{money .MarginCents}} ({{pct .MarginPct}})</td>
+      <td><span class="badge quadrant-{{.Quadrant}}">{{.Quadrant}}</span></td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

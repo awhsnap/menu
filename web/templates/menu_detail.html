@@ -1,0 +1,52 @@
+{{define "content"}}
+<p class="breadcrumb"><a href="/r/{{.Active.ID}}/menus">← Menus</a></p>
+<h1>{{.Menu.Name}}</h1>
+
+{{range .Sections}}
+<section class="menu-section">
+  <h2>{{.Section.Name}}</h2>
+  {{if .Items}}
+  <table class="table">
+    <thead><tr><th>Item</th><th>Price</th><th>Cost</th><th>Margin</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {{range .Items}}
+      <tr class="{{if not .Item.Active}}row-inactive{{end}}">
+        <td><a href="/r/{{$.Active.ID}}/items/{{.Item.ID}}">{{.Item.Name}}</a></td>
+        <td>{{money .Item.PriceCents}}</td>
+        <td>{{money .CostCents}}</td>
+        <td class="{{if lt .MarginPct $.Active.TargetFoodCostPct}}warn{{end}}">{{pct .MarginPct}}</td>
+        <td>{{if .Item.Active}}<span class="badge badge-ok">Available</span>{{else}}<span class="badge badge-off">86'd</span>{{end}}</td>
+        <td>
+          <form method="post" action="/r/{{$.Active.ID}}/items/{{.Item.ID}}/toggle" style="display:inline">
+            <input type="hidden" name="back" value="/r/{{$.Active.ID}}/menus/{{$.Menu.ID}}">
+            <button type="submit" class="link-btn">{{if .Item.Active}}86 it{{else}}Bring back{{end}}</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No items in this section yet.</p>
+  {{end}}
+
+  <details class="inline-form">
+    <summary>+ Add item to {{.Section.Name}}</summary>
+    <form method="post" action="/r/{{$.Active.ID}}/sections/{{.Section.ID}}/items">
+      <label>Name <input type="text" name="name" required></label>
+      <label>Description <input type="text" name="description"></label>
+      <label>Price <input type="text" name="price" placeholder="12.50" required></label>
+      <button type="submit" class="btn-primary">Add item</button>
+    </form>
+  </details>
+</section>
+{{end}}
+
+<details class="inline-form">
+  <summary>+ Add section</summary>
+  <form method="post" action="/r/{{.Active.ID}}/menus/{{.Menu.ID}}/sections">
+    <label>Section name <input type="text" name="name" placeholder="e.g. Desserts" required></label>
+    <button type="submit" class="btn-primary">Add section</button>
+  </form>
+</details>
+{{end}}

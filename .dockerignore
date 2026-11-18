@@ -1,2 +1,4 @@
-fly.toml
+data/
+*.db
+*.db-*
 .git

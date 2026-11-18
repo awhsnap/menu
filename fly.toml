@@ -1,28 +1,33 @@
-# fly.toml app configuration file generated for menu-j59efq on 2026-11-18T19:06:05Z
-#
-# See https://docs.fly.io/reference/configuration for information about how to use this file.
-#
-
-app = 'menu-j59efq'
-primary_region = 'ord'
+# Fly.io app config for the Menu Platform MVP.
+# IMPORTANT: `app` must be globally unique across all of Fly.io. Change it
+# before running `fly launch` / `fly deploy` (or let `fly launch` pick one
+# for you and it will rewrite this file).
+app = "menu-platform-mvp"
+primary_region = "ord"
 
 [build]
-  [build.args]
-    GO_VERSION = '1.24.7'
 
 [env]
-  PORT = '8080'
+  MENUAPP_ADDR = ":8080"
+  MENUAPP_DB = "/data/menuapp.db"
+
+[[mounts]]
+  source = "menuapp_data"
+  destination = "/data"
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    path = "/login"
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 256
+  size = "shared-cpu-1x"
+  memory = "256mb"
